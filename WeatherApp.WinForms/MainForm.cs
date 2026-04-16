@@ -11,6 +11,7 @@ public sealed class MainForm : Form
 	private readonly FavoritesService _favoritesService;
 
 	private readonly TextBox _cityTextBox;
+	private readonly CardPanel _searchInputCard;
 	private readonly ListBox _suggestionsListBox;
 	private readonly Button _searchButton;
 	private readonly Button _addFavoriteButton;
@@ -93,7 +94,7 @@ public sealed class MainForm : Form
 			BackColor = Color.Transparent,
 		};
 		topLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 28));
-		topLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 24));
+		topLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 0));
 		topLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 38));
 		topLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
 		topCard.Controls.Add(topLayout);
@@ -108,7 +109,7 @@ public sealed class MainForm : Form
 
 		_subtitleLabel = new Label
 		{
-			Text = "Design epure inspire des interfaces Android modernes",
+			Text = string.Empty,
 			Dock = DockStyle.Fill,
 			TextAlign = ContentAlignment.MiddleLeft,
 			Font = new Font("Segoe UI", 9.3F, FontStyle.Regular, GraphicsUnit.Point),
@@ -126,13 +127,22 @@ public sealed class MainForm : Form
 		searchLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 128));
 		searchLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 142));
 
+		_searchInputCard = new CardPanel
+		{
+			Dock = DockStyle.Fill,
+			Radius = 14,
+			Padding = new Padding(12, 6, 12, 6),
+			Margin = new Padding(0, 0, 8, 0),
+		};
+
 		_cityTextBox = new TextBox
 		{
 			Dock = DockStyle.Fill,
 			PlaceholderText = "Rechercher une ville",
-			BorderStyle = BorderStyle.FixedSingle,
+			BorderStyle = BorderStyle.None,
 			BackColor = Color.White,
 		};
+		_searchInputCard.Controls.Add(_cityTextBox);
 
 		_searchButton = new Button
 		{
@@ -155,7 +165,7 @@ public sealed class MainForm : Form
 			TextAlign = ContentAlignment.MiddleCenter,
 		};
 
-		searchLayout.Controls.Add(_cityTextBox, 0, 0);
+		searchLayout.Controls.Add(_searchInputCard, 0, 0);
 		searchLayout.Controls.Add(_searchButton, 1, 0);
 		searchLayout.Controls.Add(_addFavoriteButton, 2, 0);
 		searchLayout.Controls.Add(_darkModeCheckBox, 3, 0);
@@ -752,7 +762,8 @@ public sealed class MainForm : Form
 		_statusLabel.ForeColor = darkMode ? Color.FromArgb(180, 191, 208) : Color.FromArgb(80, 92, 111);
 		_favoritesListBox.BackColor = chip;
 		_favoritesListBox.ForeColor = cardFore;
-		_cityTextBox.BackColor = inputBack;
+		_searchInputCard.BackColor = darkMode ? Color.FromArgb(33, 45, 66) : Color.FromArgb(233, 243, 255);
+		_cityTextBox.BackColor = _searchInputCard.BackColor;
 		_cityTextBox.ForeColor = cardFore;
 		_suggestionsListBox.BackColor = chip;
 		_suggestionsListBox.ForeColor = cardFore;
@@ -788,10 +799,6 @@ public sealed class MainForm : Form
 		{
 			control.BackColor = inputBack;
 			control.ForeColor = cardFore;
-			if (control is TextBox textBox)
-			{
-				textBox.BorderStyle = BorderStyle.FixedSingle;
-			}
 		}
 		else if (control is ListBox)
 		{
@@ -840,8 +847,6 @@ public sealed class MainForm : Form
 		private readonly Label _dayLabel;
 		private readonly PictureBox _iconBox;
 		private readonly Label _temperatureLabel;
-		private readonly Label _summaryLabel;
-		private readonly Label _detailsLabel;
 
 		public ForecastDayCard()
 		{
@@ -853,13 +858,11 @@ public sealed class MainForm : Form
 			{
 				Dock = DockStyle.Fill,
 				ColumnCount = 1,
-				RowCount = 5,
+				RowCount = 3,
 				BackColor = Color.Transparent,
 			};
-			layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 24));
-			layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
-			layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 44));
-			layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 24));
+			layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 26));
+			layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34));
 			layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
 
 			_dayLabel = new Label
@@ -872,7 +875,7 @@ public sealed class MainForm : Form
 			_iconBox = new PictureBox
 			{
 				Dock = DockStyle.Fill,
-				SizeMode = PictureBoxSizeMode.CenterImage,
+				SizeMode = PictureBoxSizeMode.Zoom,
 				BackColor = Color.Transparent,
 			};
 
@@ -880,29 +883,12 @@ public sealed class MainForm : Form
 			{
 				Dock = DockStyle.Fill,
 				TextAlign = ContentAlignment.MiddleCenter,
-				Font = new Font("Segoe UI Semibold", 24F, FontStyle.Bold, GraphicsUnit.Point),
-			};
-
-			_summaryLabel = new Label
-			{
-				Dock = DockStyle.Fill,
-				TextAlign = ContentAlignment.MiddleCenter,
-				Font = new Font("Segoe UI", 9.4F, FontStyle.Regular, GraphicsUnit.Point),
-			};
-
-			_detailsLabel = new Label
-			{
-				Dock = DockStyle.Fill,
-				TextAlign = ContentAlignment.TopCenter,
-				Font = new Font("Segoe UI", 8.6F, FontStyle.Regular, GraphicsUnit.Point),
-				AutoEllipsis = true,
+				Font = new Font("Segoe UI Semibold", 20F, FontStyle.Bold, GraphicsUnit.Point),
 			};
 
 			layout.Controls.Add(_dayLabel, 0, 0);
-			layout.Controls.Add(_iconBox, 0, 1);
-			layout.Controls.Add(_temperatureLabel, 0, 2);
-			layout.Controls.Add(_summaryLabel, 0, 3);
-			layout.Controls.Add(_detailsLabel, 0, 4);
+			layout.Controls.Add(_temperatureLabel, 0, 1);
+			layout.Controls.Add(_iconBox, 0, 2);
 			Controls.Add(layout);
 		}
 
@@ -918,9 +904,7 @@ public sealed class MainForm : Form
 			{
 				_dayLabel.Text = "--";
 				_temperatureLabel.Text = "--°";
-				_summaryLabel.Text = "Aucune donnée";
-				_detailsLabel.Text = string.Empty;
-				_iconBox.Image = WeatherIconFactory.Create(0, darkMode, 44);
+				_iconBox.Image = WeatherIconFactory.Create(0, darkMode, 72);
 				return;
 			}
 
@@ -933,13 +917,9 @@ public sealed class MainForm : Form
 
 			_dayLabel.Text = dayLabel;
 			_temperatureLabel.Text = $"{Math.Round(forecast.TempMaxC):0}°";
-			_summaryLabel.Text = forecast.Description;
-			_detailsLabel.Text = $"Min {Math.Round(forecast.TempMinC):0}°  Vent {Math.Round(forecast.WindSpeedKmh):0} km/h\nNuages {forecast.CloudCoverPercent}%  Humidite {forecast.HumidityPercent}%";
-			_iconBox.Image = WeatherIconFactory.Create(forecast.WeatherCode, darkMode, 44);
+			_iconBox.Image = WeatherIconFactory.Create(forecast.WeatherCode, darkMode, 76);
 			_dayLabel.ForeColor = textColor;
 			_temperatureLabel.ForeColor = textColor;
-			_summaryLabel.ForeColor = secondaryColor;
-			_detailsLabel.ForeColor = secondaryColor;
 		}
 	}
 

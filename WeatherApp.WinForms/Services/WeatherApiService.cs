@@ -29,6 +29,29 @@ public sealed class WeatherApiService
 		};
 	}
 
+	public async Task<IReadOnlyList<FavoriteCity>> SearchCitiesAsync(string cityName, int count = 8)
+	{
+		string encodedCityName = Uri.EscapeDataString(cityName.Trim());
+		string url = $"{GeoEndpoint}?name={encodedCityName}&count={count}&language=fr&format=json";
+
+		GeoSearchResponseDto response = await GetAndDeserializeAsync<GeoSearchResponseDto>(url);
+
+		if (response.Results is null || response.Results.Count == 0)
+		{
+			return Array.Empty<FavoriteCity>();
+		}
+
+		return response.Results
+			.Select(city => new FavoriteCity
+			{
+				Name = city.Name,
+				Country = city.Country,
+				Latitude = city.Latitude,
+				Longitude = city.Longitude,
+			})
+			.ToList();
+	}
+
 	public async Task<IReadOnlyList<WeatherDayForecast>> GetForecastAsync(double latitude, double longitude, int days = 5)
 	{
 		string latitudeInvariant = latitude.ToString(CultureInfo.InvariantCulture);
@@ -168,6 +191,9 @@ public sealed class WeatherApiService
 
 		[JsonPropertyName("country")]
 		public string? Country { get; init; }
+
+		[JsonPropertyName("admin1")]
+		public string? Admin1 { get; init; }
 
 		[JsonPropertyName("latitude")]
 		public double Latitude { get; init; }
